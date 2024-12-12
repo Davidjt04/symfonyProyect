@@ -35,6 +35,9 @@ class Pregunta
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    #[ORM\Column(type: Types::ARRAY)]
+    private array $enunciado = [];
+
     public function __construct()
     {
         $this->repuesta = new ArrayCollection();
@@ -119,6 +122,18 @@ class Pregunta
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getEnunciado(): array
+    {
+        return $this->enunciado;
+    }
+
+    public function setEnunciado(array $enunciado): static
+    {
+        $this->enunciado = $enunciado;
 
         return $this;
     }

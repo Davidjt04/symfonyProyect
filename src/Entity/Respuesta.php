@@ -25,7 +25,7 @@ class Respuesta
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $fecha_respuesta = null;
-
+    
     #[ORM\ManyToOne(inversedBy: 'respuesta')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
