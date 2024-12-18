@@ -22,8 +22,8 @@ class Pregunta
     /**
      * @var Collection<int, Respuesta>
      */
-    #[ORM\OneToMany(targetEntity: Respuesta::class, mappedBy: 'pregunta')]
-    private Collection $repuesta;
+    // #[ORM\OneToMany(targetEntity: Respuesta::class, mappedBy: 'pregunta')]
+    // private Collection $repuesta;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $fecha_ini = null;

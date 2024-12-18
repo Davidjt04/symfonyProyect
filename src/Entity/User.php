@@ -6,9 +6,17 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+// use Symfony\Component\Validator\Constraints as Assert;
+
+
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+#[UniqueEntity(fields: ['Correo'], message: 'There is already an account with this Correo')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -18,13 +26,26 @@ class User
     #[ORM\Column(length: 30)]
     private ?string $Nombre = null;
 
-    #[ORM\Column(length: 30)]
+    #[ORM\Column(length: 4096)]
     private ?string $Contraseña = null;
 
     #[ORM\Column(length: 50)]
     private ?string $Correo = null;
+    
+    #[ORM\Column(length: 20)]
+    private ?string $rol = null;
 
-    /**
+
+    public function __construct()
+    {
+        //array para saber las preguntas del usuario 
+        $this->pregunta = new ArrayCollection();
+        // $this->respuesta = new ArrayCollection();
+        //atributos del usuario
+    }
+
+    //RELACIONES
+     /**
      * @var Collection<int, Pregunta>
      */
     #[ORM\OneToMany(targetEntity: Pregunta::class, mappedBy: 'user')]
@@ -36,11 +57,7 @@ class User
     #[ORM\OneToMany(targetEntity: Respuesta::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $respuesta;
 
-    public function __construct()
-    {
-        $this->pregunta = new ArrayCollection();
-        $this->respuesta = new ArrayCollection();
-    }
+
 
     public function getId(): ?int
     {
@@ -139,6 +156,45 @@ class User
                 $respuestum->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRoles(): array {
+        //Devuelvo los posibles roles del usuario 
+        //array donde tengo los roles del usuario
+        $rol = ['ROLE_USER']; 
+        if($this->Correo === 'djantor1402@g.educaand.es'){
+            $rol = ['ROLE_USER','ROLE_ADMIN'];
+        }
+
+        return $rol;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Si estás almacenando datos sensibles como contraseñas, aquí los eliminarías.
+        // $this->Contraseña = null;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        //devuelve un identificador único, como el correo electrónico.
+        return $this->Correo;  
+    }
+    public function getPassword(): ?string
+    {
+        return $this->Contraseña;  // Retorna la contraseña que es almacenada (probablemente hasheada)
+    }
+
+    public function getRol(): ?string
+    {
+        return $this->rol;
+    }
+
+    public function setRol(string $rol): static
+    {
+        $this->rol = $rol;
 
         return $this;
     }
